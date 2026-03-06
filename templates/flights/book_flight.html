@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-5">
+    <div class="card shadow p-4">
+        <h3 class="mb-4">Confirm Flight Booking</h3>
+
+        <p><strong>Airline:</strong> {{ flight.airline.name }}</p>
+        <p><strong>Flight Number:</strong> {{ flight.flight_number }}</p>
+        <p><strong>From:</strong> {{ flight.origin.city }}</p>
+        <p><strong>To:</strong> {{ flight.destination.city }}</p>
+        <p><strong>Departure:</strong> {{ flight.departure_time }}</p>
+        <p><strong>Price:</strong> ₹ {{ flight.price }}</p>
+
+        <form method="post">
+            {% csrf_token %}
+            <button class="btn btn-success w-100">
+                Confirm Booking
+            </button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

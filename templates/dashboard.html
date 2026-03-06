@@ -1,0 +1,29 @@
+<h2>My Bookings</h2>
+
+<table border="1" cellpadding="10">
+    <tr>
+        <th>Booking Ref</th>
+        <th>Package</th>
+        <th>Status</th>
+        <th>Amount</th>
+        <th>Invoice</th>
+    </tr>
+
+    {% for booking in bookings %}
+    <tr>
+        <td>{{ booking.booking_ref }}</td>
+        <td>{{ booking.package }}</td>
+        <td>{{ booking.booking_status }}</td>
+        <td>₹ {{ booking.total_amount }}</td>
+        <td>
+            {% if booking.invoice %}
+                <a href="/invoices/download/{{ booking.invoice.id }}/">
+                    Download
+                </a>
+            {% else %}
+                Not Available
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>

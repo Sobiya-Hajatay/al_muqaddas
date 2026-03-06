@@ -1,0 +1,1 @@
+# Signals temporarily disabled for simplified booking flow

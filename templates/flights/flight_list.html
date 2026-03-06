@@ -1,0 +1,400 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+
+/* ================= SEARCH BOX ================= */
+
+.mmt-search-box{
+background:linear-gradient(135deg,#ffffff,#f7faff);
+border-radius:18px;
+padding:22px;
+box-shadow:0 15px 40px rgba(13,110,253,.15);
+margin-bottom:22px;
+}
+
+.mmt-field label{
+font-size:12px;
+color:#6c757d;
+font-weight:600;
+}
+
+.mmt-field input,
+.mmt-field select{
+border:1px solid #e9ecef;
+border-radius:10px;
+font-weight:700;
+height:46px;
+}
+
+/* swap button */
+
+.swap-btn{
+width:42px;
+height:42px;
+border-radius:50%;
+background:#eef4ff;
+border:2px solid #dbe7ff;
+display:flex;
+align-items:center;
+justify-content:center;
+cursor:pointer;
+font-weight:900;
+}
+
+/* ================= LAYOUT ================= */
+
+.results-wrapper{
+display:grid;
+grid-template-columns:260px 1fr;
+gap:24px;
+align-items:start;
+}
+
+@media(max-width:992px){
+.results-wrapper{
+grid-template-columns:1fr;
+}
+}
+
+/* ================= FILTER ================= */
+
+.filter-box{
+background:#fff;
+border-radius:16px;
+padding:18px;
+box-shadow:0 10px 30px rgba(0,0,0,.08);
+}
+
+.filter-box h6{
+border-bottom:1px solid #eee;
+padding-bottom:10px;
+margin-bottom:15px;
+}
+
+/* ================= FLIGHT CARD ================= */
+
+.flight-card{
+border-radius:18px;
+border:1px solid #eef2f7;
+transition:.28s;
+padding:12px;
+background:#fff;
+}
+
+.flight-card:hover{
+transform:translateY(-4px);
+box-shadow:0 22px 50px rgba(0,0,0,.15);
+}
+
+.flight-time{
+font-size:22px;
+font-weight:900;
+}
+
+.price-big{
+font-size:28px;
+font-weight:900;
+color:#0d6efd;
+}
+
+.badge-cheapest{
+background:#00b67a;
+color:#fff;
+font-size:10px;
+padding:4px 8px;
+border-radius:6px;
+margin-left:6px;
+}
+
+/* seat bar */
+
+.seat-bar{
+height:6px;
+background:#eee;
+border-radius:10px;
+overflow:hidden;
+margin-top:6px;
+}
+
+.seat-fill{
+height:100%;
+background:linear-gradient(90deg,#00eeff,#dc3545);
+}
+
+/* lowest price strip */
+
+.price-strip{
+background:linear-gradient(90deg,#0d6efd,#4dabf7);
+color:#fff;
+padding:10px 16px;
+border-radius:12px;
+font-weight:600;
+margin-bottom:16px;
+}
+
+</style>
+
+<div class="container-fluid px-3 py-4">
+
+<!-- ================= SEARCH ================= -->
+
+<div class="mmt-search-box">
+
+<form method="get" class="row g-3 align-items-end">
+
+<div class="col-md-3 mmt-field">
+<label>From</label>
+<input type="text" name="from_city" value="{{ from_city }}" class="form-control">
+</div>
+
+<div class="col-md-1 d-flex justify-content-center">
+<div class="swap-btn" onclick="swapCities()">⇄</div>
+</div>
+
+<div class="col-md-3 mmt-field">
+<label>To</label>
+<input type="text" name="to_city" value="{{ to_city }}" class="form-control">
+</div>
+
+<div class="col-md-2 mmt-field">
+<label>Departure</label>
+<input type="date" name="date" class="form-control">
+</div>
+
+<div class="col-md-2 mmt-field">
+<label>Sort</label>
+
+<select name="sort" class="form-select">
+
+<option value="">Recommended</option>
+
+<option value="price" {% if sort == "price" %}selected{% endif %}>
+Cheapest
+</option>
+
+<option value="duration" {% if sort == "duration" %}selected{% endif %}>
+Fastest
+</option>
+
+<option value="time" {% if sort == "time" %}selected{% endif %}>
+Departure
+</option>
+
+</select>
+
+</div>
+
+<div class="col-md-1">
+
+<button class="btn btn-primary w-100 fw-bold">
+🔍
+</button>
+
+</div>
+
+</form>
+
+</div>
+
+<!-- ================= RESULTS ================= -->
+
+<div class="results-wrapper">
+
+<!-- ================= FILTER ================= -->
+
+<div class="filter-box d-none d-lg-block">
+
+<h6 class="fw-bold">🔎 Filters</h6>
+
+<form method="get">
+
+<input type="hidden" name="from_city" value="{{ from_city }}">
+<input type="hidden" name="to_city" value="{{ to_city }}">
+<input type="hidden" name="date" value="{{ date }}">
+<input type="hidden" name="sort" value="{{ sort }}">
+
+<label class="small fw-bold">Max Price</label>
+
+<input type="number"
+name="max_price"
+class="form-control mb-3"
+value="{{ request.GET.max_price }}">
+
+<label class="small fw-bold">Airline</label>
+
+<input type="text"
+name="airline"
+class="form-control mb-3"
+value="{{ request.GET.airline }}">
+
+<button class="btn btn-outline-primary w-100">
+Apply Filters
+</button>
+
+</form>
+
+</div>
+
+<!-- ================= FLIGHT RESULTS ================= -->
+
+<div>
+
+{% if cheapest_price %}
+
+<div class="price-strip">
+💡 Lowest fare for this route: ₹ {{ cheapest_price }}
+</div>
+
+{% endif %}
+
+{% for f in flights %}
+
+<div class="card mb-3 flight-card">
+
+<div class="card-body">
+
+<div class="row align-items-center">
+
+<!-- airline -->
+
+<div class="col-md-3 col-6 d-flex align-items-center gap-2">
+
+<img src="{% if f.airline.logo %}{{ f.airline.logo.url }}{% else %}https://via.placeholder.com/60x60?text=✈{% endif %}"
+style="height:42px;">
+
+<div>
+
+<div class="fw-bold">
+
+{{ f.airline.name }}
+
+{% if cheapest_price and f.price == cheapest_price %}
+<span class="badge-cheapest">CHEAPEST</span>
+{% endif %}
+
+</div>
+
+<div class="small text-muted">
+
+{{ f.flight_number }}
+
+</div>
+
+</div>
+
+</div>
+
+<!-- departure -->
+
+<div class="col-md-2 col-6 text-center">
+
+<div class="flight-time">
+{{ f.departure_time|date:"H:i" }}
+</div>
+
+<div class="text-muted small">
+{{ f.origin.city }}
+</div>
+
+</div>
+
+<!-- duration -->
+
+<div class="col-md-2 text-center d-none d-md-block">
+
+<div class="small text-muted">Duration</div>
+
+<div class="fw-bold">
+{{ f.duration }}
+</div>
+
+</div>
+
+<!-- arrival -->
+
+<div class="col-md-2 col-6 text-center">
+
+<div class="flight-time">
+{{ f.arrival_time|date:"H:i" }}
+</div>
+
+<div class="text-muted small">
+{{ f.destination.city }}
+</div>
+
+</div>
+
+<!-- price -->
+
+<div class="col-md-3 col-6 text-end">
+
+<div class="price-big">
+₹ {{ f.price }}
+</div>
+
+{% if f.available_seats %}
+
+<div class="seat-bar">
+<div class="seat-fill"
+style="width: {{ f.available_seats }}%;">
+</div>
+</div>
+
+{% endif %}
+
+{% if f.available_seats and f.available_seats <= 5 %}
+
+<div class="small text-danger fw-bold mt-1">
+⚠ Only {{ f.available_seats }} seats left
+</div>
+
+{% endif %}
+
+<a href="{% url 'book_flight' f.id %}"
+class="btn btn-warning fw-bold w-100 mt-2">
+
+Book Flight
+
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+{% empty %}
+
+<div class="text-center text-muted py-5">
+✈ No flights found
+</div>
+
+{% endfor %}
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+function swapCities(){
+
+const from=document.querySelector('[name="from_city"]');
+const to=document.querySelector('[name="to_city"]');
+
+const temp=from.value;
+
+from.value=to.value;
+to.value=temp;
+
+}
+
+</script>
+
+{% endblock %}

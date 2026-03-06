@@ -1,0 +1,267 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+
+/* ===== PAGE ===== */
+body{
+margin:0;
+padding:0;
+background:#f6f9ff;
+}
+
+/* ===== SEARCH CARD ===== */
+
+.search-card{
+border-radius:18px;
+background:linear-gradient(135deg,#0d6efd,#0a58ca);
+color:white;
+}
+
+/* ===== HOTEL CARD ===== */
+
+.hotel-card{
+border-radius:18px;
+transition:all .25s ease;
+overflow:hidden;
+}
+
+.hotel-card:hover{
+transform:translateY(-4px);
+box-shadow:0 12px 30px rgba(0,0,0,.12);
+}
+
+.hotel-img{
+height:180px;
+object-fit:cover;
+width:100%;
+border-radius:12px;
+}
+
+/* ===== PRICE BOX ===== */
+
+.price-box{
+background:#f8f9fa;
+border-left:2px dashed #dee2e6;
+height:100%;
+}
+
+.price-value{
+font-size:22px;
+font-weight:700;
+color:#0d6efd;
+}
+
+/* ===== STAR ===== */
+
+.star{
+color:#ffc107;
+}
+
+/* ===== BADGE ===== */
+
+.hotel-type{
+font-size:12px;
+padding:4px 10px;
+border-radius:20px;
+background:#e9f2ff;
+color:#0d6efd;
+font-weight:600;
+}
+
+</style>
+
+<div class="container-fluid px-3 py-4">
+
+<!-- ================= SEARCH BAR ================= -->
+
+<div class="card search-card shadow-lg border-0 mb-4">
+
+<div class="card-body p-4">
+
+<form method="get">
+
+<div class="row g-3 align-items-end">
+
+<div class="col-md-4">
+
+<label class="form-label fw-semibold">City</label>
+
+<input type="text"
+name="city"
+class="form-control"
+value="{{ city }}"
+placeholder="Makkah / Madinah">
+
+</div>
+
+<div class="col-md-3">
+
+<label class="form-label fw-semibold">Check-in</label>
+
+<input type="date"
+name="checkin"
+class="form-control"
+value="{{ checkin }}">
+
+</div>
+
+<div class="col-md-3">
+
+<label class="form-label fw-semibold">Check-out</label>
+
+<input type="date"
+name="checkout"
+class="form-control"
+value="{{ checkout }}">
+
+</div>
+
+<div class="col-md-2 d-grid">
+
+<button class="btn btn-warning fw-bold">
+
+🔍 Search
+
+</button>
+
+</div>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+<!-- ================= HOTEL LIST ================= -->
+
+{% for h in hotels %}
+
+<div class="card hotel-card shadow-sm border-0 mb-3">
+
+<div class="row g-0 align-items-center">
+
+<!-- IMAGE -->
+
+<div class="col-md-3 p-3">
+
+{% if h.main_image %}
+
+<img src="{{ h.main_image.url }}"
+class="hotel-img">
+
+{% else %}
+
+<img src="https://via.placeholder.com/300x200?text=Hotel"
+class="hotel-img">
+
+{% endif %}
+
+</div>
+
+<!-- INFO -->
+
+<div class="col-md-6">
+
+<div class="card-body">
+
+<h5 class="fw-bold mb-1">
+
+{{ h.name }}
+
+</h5>
+
+<!-- STARS -->
+
+<div class="mb-2">
+
+{% for i in "12345"|slice:":h.star_rating"|make_list %}
+
+<span class="star">★</span>
+
+{% endfor %}
+
+</div>
+
+<div class="text-muted small mb-2">
+
+📍 {{ h.city.name }}
+
+</div>
+
+<span class="hotel-type">
+
+{{ h.get_hotel_type_display }}
+
+</span>
+
+<p class="small text-muted mt-2 mb-0">
+
+{{ h.description|truncatechars:120 }}
+
+</p>
+
+</div>
+
+</div>
+
+<!-- PRICE -->
+
+<div class="col-md-3">
+
+<div class="price-box text-center p-4">
+
+{% if h.rooms.first %}
+
+<div class="price-value">
+
+₹ {{ h.rooms.first.price_per_night }}
+
+</div>
+
+<div class="small text-muted">
+
+per night
+
+</div>
+
+{% else %}
+
+<div class="text-muted">
+
+Price on request
+
+</div>
+
+{% endif %}
+
+<a href="#"
+class="btn btn-primary w-100 mt-3">
+
+View Rooms
+
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+{% empty %}
+
+<div class="text-center text-muted py-5">
+
+🏨 No hotels found
+
+</div>
+
+{% endfor %}
+
+</div>
+
+{% endblock %}

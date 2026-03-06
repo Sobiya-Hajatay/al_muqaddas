@@ -1,0 +1,89 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Payment Successful</title>
+
+<style>
+
+body{
+font-family: Arial;
+background:#f4f6f9;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+}
+
+.card{
+background:white;
+padding:40px;
+width:400px;
+border-radius:10px;
+box-shadow:0 10px 30px rgba(0,0,0,0.1);
+text-align:center;
+}
+
+.success{
+font-size:22px;
+color:green;
+margin-bottom:20px;
+}
+
+.details{
+text-align:left;
+margin-top:20px;
+}
+
+.details p{
+margin:8px 0;
+}
+
+.btn{
+display:block;
+margin-top:20px;
+padding:12px;
+text-decoration:none;
+border-radius:6px;
+}
+
+.home{
+background:#3498db;
+color:white;
+}
+
+.invoice{
+background:#27ae60;
+color:white;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+<div class="success">
+✅ Payment Successful
+</div>
+
+<div class="details">
+
+<p><b>Booking Ref:</b> {{ booking.booking_ref }}</p>
+<p><b>Name:</b> {{ booking.full_name }}</p>
+<p><b>Total Paid:</b> ₹{{ booking.total_amount }}</p>
+
+</div>
+
+<a href="/" class="btn home">Go To Home</a>
+
+<a href="/invoices/download/{{ booking.invoice.id }}/"
+class="btn invoice">
+Download Invoice
+</a>
+
+</div>
+
+</body>
+</html>

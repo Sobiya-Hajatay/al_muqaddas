@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Al Muqaddas Tours & Travels</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+
+/* ===== GLOBAL ===== */
+
+body{
+background:#f6f9ff;
+font-family:Arial;
+margin:0;
+padding:0;
+}
+
+/* ===== NAVBAR ===== */
+
+.main-navbar{
+background:#0f172a;
+position:sticky;
+top:0;
+z-index:999;
+}
+
+.navbar-brand{
+font-weight:700;
+letter-spacing:1px;
+font-size:20px;
+}
+
+.nav-link{
+color:#cbd5e1 !important;
+font-weight:500;
+margin-right:18px;
+padding:8px 12px;
+border-radius:8px;
+transition:.2s;
+}
+
+.nav-link:hover{
+background:#1e293b;
+color:white !important;
+}
+
+/* active menu */
+
+.nav-link.active{
+background:#2563eb;
+color:white !important;
+}
+
+/* ===== FOOTER ===== */
+
+.footer{
+background:#0f172a;
+color:#cbd5e1;
+padding:30px 0;
+margin-top:50px;
+}
+
+.footer a{
+color:#cbd5e1;
+text-decoration:none;
+}
+
+.footer a:hover{
+color:white;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- ===== NAVBAR ===== -->
+
+<nav class="navbar navbar-expand-lg navbar-dark main-navbar">
+
+<div class="container-fluid px-4">
+
+<a class="navbar-brand" href="/">
+AL MUQADDAS
+</a>
+
+<button class="navbar-toggler"
+type="button"
+data-bs-toggle="collapse"
+data-bs-target="#navbarNav">
+
+<span class="navbar-toggler-icon"></span>
+
+</button>
+
+<div class="collapse navbar-collapse" id="navbarNav">
+
+<ul class="navbar-nav ms-auto">
+
+<li class="nav-item">
+<a class="nav-link {% if request.path == '/flights/' %}active{% endif %}" href="/flights/">
+✈ Flights
+</a>
+</li>
+
+<li class="nav-item">
+<a class="nav-link {% if request.path == '/hotels/' %}active{% endif %}" href="/hotels/">
+🏨 Hotels
+</a>
+</li>
+
+<li class="nav-item">
+<a class="nav-link {% if request.path == '/contact/' %}active{% endif %}" href="/contact/">
+📞 Contact
+</a>
+</li>
+
+</ul>
+
+</div>
+
+</div>
+
+</nav>
+
+<!-- ===== PAGE CONTENT ===== -->
+
+<div>
+
+{% block content %}
+
+{% endblock %}
+
+</div>
+
+<!-- ===== FOOTER ===== -->
+
+<footer class="footer">
+
+<div class="container-fluid px-4">
+
+<div class="row">
+
+<div class="col-md-6">
+
+<h5>Al Muqaddas Tours & Travels</h5>
+
+<p class="small">
+Flights, Hotels and Travel services
+for your journey.
+</p>
+
+</div>
+
+<div class="col-md-3">
+
+<h6>Services</h6>
+
+<ul class="list-unstyled small">
+
+<li><a href="/flights/">Flights</a></li>
+<li><a href="/hotels/">Hotels</a></li>
+
+</ul>
+
+</div>
+
+<div class="col-md-3">
+
+<h6>Contact</h6>
+
+<p class="small">
+Al Muqaddas Tours & Travels<br>
+India
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-5">
+    <div class="card shadow-lg p-4 text-center">
+
+        <h3 class="text-success mb-4">🎉 Flight Booking Successful!</h3>
+
+        <hr>
+
+        <p><strong>Booking Reference:</strong> {{ booking.booking_ref }}</p>
+
+        {% if booking.flight %}
+            <p><strong>Flight Number:</strong> {{ booking.flight.flight_number }}</p>
+            <p><strong>From:</strong> {{ booking.flight.origin.city }}</p>
+            <p><strong>To:</strong> {{ booking.flight.destination.city }}</p>
+            <p><strong>Departure:</strong> {{ booking.flight.departure_time }}</p>
+        {% endif %}
+
+        <p><strong>Passenger Name:</strong> {{ booking.full_name }}</p>
+        <p><strong>Total Amount:</strong> ₹ {{ booking.total_amount }}</p>
+        <p><strong>Payment Status:</strong> {{ booking.payment_status|title }}</p>
+        <p><strong>Booking Status:</strong> {{ booking.booking_status|title }}</p>
+
+        <hr>
+
+        <a href="{% url 'flights_page' %}" class="btn btn-outline-secondary mt-3 me-2">
+            ✈ Book Another Flight
+        </a>
+
+        <a href="/accounts/dashboard/" class="btn btn-primary mt-3">
+            📊 Go to Dashboard
+        </a>
+
+    </div>
+</div>
+
+{% endblock %}

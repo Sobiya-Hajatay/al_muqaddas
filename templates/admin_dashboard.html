@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Al Muqaddas Control Room</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+:root{
+    --primary:#0b1f3a;
+    --gold:#caa45c;
+}
+
+body{
+    background:#f4f7fb;
+    font-family:'Segoe UI',sans-serif;
+}
+
+.dashboard-header{
+    background:linear-gradient(135deg,#0b1f3a,#102c57);
+    color:white;
+    padding:30px;
+    border-radius:16px;
+    margin-bottom:30px;
+}
+
+.kpi-card{
+    border:none;
+    border-radius:18px;
+    padding:25px;
+    color:white;
+    box-shadow:0 15px 35px rgba(0,0,0,.15);
+}
+
+.kpi-1{ background:linear-gradient(135deg,#667eea,#764ba2); }
+.kpi-2{ background:linear-gradient(135deg,#11998e,#38ef7d); }
+.kpi-3{ background:linear-gradient(135deg,#f7971e,#ffd200); }
+
+.kpi-number{
+    font-size:32px;
+    font-weight:800;
+}
+
+.chart-card,
+.table-card{
+    background:white;
+    border-radius:16px;
+    padding:20px;
+    box-shadow:0 10px 25px rgba(0,0,0,.08);
+}
+</style>
+</head>
+
+<body>
+
+<div class="container py-4">
+
+<div class="dashboard-header">
+    <h2 class="fw-bold mb-1">🧠 Al Muqaddas Control Room</h2>
+    <p class="mb-0">Real-time business insights</p>
+</div>
+
+<div class="row g-4 mb-4">
+
+<div class="col-md-4">
+    <div class="kpi-card kpi-1">
+        <div>Total Packages</div>
+        <div class="kpi-number">{{ total_packages }}</div>
+    </div>
+</div>
+
+<div class="col-md-4">
+    <div class="kpi-card kpi-2">
+        <div>Total Bookings</div>
+        <div class="kpi-number">{{ total_bookings }}</div>
+    </div>
+</div>
+
+<div class="col-md-4">
+    <div class="kpi-card kpi-3">
+        <div>Total Revenue</div>
+        <div class="kpi-number">₹ {{ total_revenue }}</div>
+    </div>
+</div>
+
+</div>
+
+<div class="chart-card mb-4">
+    <h5 class="fw-bold mb-3">📊 Monthly Bookings</h5>
+    <canvas id="bookingChart" height="110"></canvas>
+</div>
+
+<div class="table-card">
+    <h5 class="fw-bold mb-3">🕋 Latest Bookings</h5>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>Name</th>
+                    <th>Package</th>
+                    <th>Persons</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for b in latest_bookings %}
+                <tr>
+                    <td>{{ b.full_name }}</td>
+                    <td>{{ b.package.title }}</td>
+                    <td>{{ b.persons }}</td>
+                    <td>₹ {{ b.total_amount }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center">No bookings yet</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const ctx = document.getElementById('bookingChart');
+
+    const labels = JSON.parse('{{ monthly_labels_json|escapejs }}');
+    const counts = JSON.parse('{{ monthly_counts_json|escapejs }}');
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Bookings',
+                data: counts,
+                borderWidth: 2,
+                borderRadius: 6,
+                backgroundColor: '#0b1f3a'
+            }]
+        },
+        options: {
+            responsive:true,
+            plugins:{ legend:{ display:false } },
+            scales:{ y:{ beginAtZero:true } }
+        }
+    });
+});
+</script>
+
+</body>
+</html>
