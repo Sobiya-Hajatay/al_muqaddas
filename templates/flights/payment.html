@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+<div class="row justify-content-center">
+
+<div class="col-md-6">
+
+<div class="card shadow-lg border-0">
+
+<div class="card-body p-4">
+
+<h3 class="text-center mb-4">💳 Secure Payment</h3>
+
+<hr>
+
+<h5 class="mb-3">Flight Details</h5>
+
+<p><strong>Passenger:</strong> {{ booking.full_name }}</p>
+<p><strong>Flight:</strong> {{ flight.airline }}</p>
+<p><strong>From:</strong> {{ flight.origin.city }}</p>
+<p><strong>To:</strong> {{ flight.destination.city }}</p>
+<p><strong>Travel Date:</strong> {{ booking.travel_date }}</p>
+
+<hr>
+
+<h4 class="text-center text-success mb-4">
+Total Amount : ₹ {{ flight.price }}
+</h4>
+
+<div class="text-center">
+
+<button id="pay-btn" class="btn btn-success btn-lg w-100">
+💳 Pay Now Securely
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<form id="payment-form" method="POST" action="/flights/payment/success/">
+{% csrf_token %}
+
+<input type="hidden" name="razorpay_payment_id" id="payment_id">
+<input type="hidden" name="razorpay_order_id" id="order_id">
+<input type="hidden" name="razorpay_signature" id="signature">
+
+</form>
+
+
+<script>
+
+var options = {
+
+    "key": "{{ razorpay_key }}",
+    "amount": "{{ amount }}",
+    "currency": "INR",
+    "name": "Al Muqaddas Tours",
+    "description": "Flight Booking",
+    "order_id": "{{ order_id }}",
+
+    "theme": {
+        "color": "#198754"
+    },
+
+    "handler": function (response){
+
+        document.getElementById("payment_id").value = response.razorpay_payment_id;
+        document.getElementById("order_id").value = response.razorpay_order_id;
+        document.getElementById("signature").value = response.razorpay_signature;
+
+        document.getElementById("payment-form").submit();
+    }
+
+};
+
+var rzp1 = new Razorpay(options);
+
+document.getElementById('pay-btn').onclick = function(e){
+    rzp1.open();
+    e.preventDefault();
+}
+
+</script>
+
+{% endblock %}

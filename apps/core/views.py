@@ -20,6 +20,8 @@ from apps.invoices.models import Invoice
 from django.core.mail import send_mail
 
 
+
+
 # ================= HOME =================
 
 def home(request):
@@ -311,3 +313,30 @@ Message:
         pass
 
     return render(request,"contact.html",{"success":success})
+def hotel_rooms(request, id):
+
+    hotel = get_object_or_404(Hotel, id=id)
+
+    rooms = Room.objects.filter(hotel=hotel)
+
+    return render(request, "rooms.html", {
+        "hotel": hotel,
+        "rooms": rooms
+    })
+def contact(request):
+
+    if request.method == "POST":
+
+        name = request.POST.get("name")
+        email = request.POST.get("email")
+        subject = request.POST.get("subject")
+        message = request.POST.get("message")
+
+        print(name, email, subject, message)  # Debug in terminal
+
+        messages.success(request, "Message sent successfully!")
+
+        return redirect("contact")
+
+    return render(request, "contact.html")
+    

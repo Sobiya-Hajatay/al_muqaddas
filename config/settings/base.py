@@ -21,12 +21,12 @@ INSTALLED_APPS = [
     'apps.accounts',
     'apps.core',
    
-    'apps.bookings',
-    
-    'apps.invoices',
-    'apps.packages',
-    'apps.flights',
-   "apps.hotels",
+
+     'apps.bookings',
+     'apps.invoices',
+     'apps.packages',
+     'apps.flights',
+     "apps.hotels",
   
 ]
 

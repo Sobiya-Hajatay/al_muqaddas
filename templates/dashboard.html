@@ -1,29 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>My Bookings</title>
+
+<style>
+
+body{
+font-family: Arial;
+background:#f4f6f9;
+padding:40px;
+}
+
+h2{
+margin-bottom:20px;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+background:white;
+}
+
+th,td{
+padding:12px;
+border:1px solid #ddd;
+text-align:center;
+}
+
+th{
+background:#007bff;
+color:white;
+}
+
+a{
+text-decoration:none;
+color:#007bff;
+}
+
+.no-booking{
+padding:20px;
+background:#fff3cd;
+border:1px solid #ffeeba;
+margin-top:20px;
+}
+
+.logout{
+float:right;
+margin-bottom:20px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<a class="logout" href="/accounts/logout/">Logout</a>
+
 <h2>My Bookings</h2>
 
-<table border="1" cellpadding="10">
-    <tr>
-        <th>Booking Ref</th>
-        <th>Package</th>
-        <th>Status</th>
-        <th>Amount</th>
-        <th>Invoice</th>
-    </tr>
+{% if bookings %}
 
-    {% for booking in bookings %}
-    <tr>
-        <td>{{ booking.booking_ref }}</td>
-        <td>{{ booking.package }}</td>
-        <td>{{ booking.booking_status }}</td>
-        <td>₹ {{ booking.total_amount }}</td>
-        <td>
-            {% if booking.invoice %}
-                <a href="/invoices/download/{{ booking.invoice.id }}/">
-                    Download
-                </a>
-            {% else %}
-                Not Available
-            {% endif %}
-        </td>
-    </tr>
-    {% endfor %}
+<table>
+
+<tr>
+<th>Booking Ref</th>
+<th>Package</th>
+<th>Status</th>
+<th>Amount</th>
+<th>Invoice</th>
+</tr>
+
+{% for booking in bookings %}
+
+<tr>
+
+<td>{{ booking.booking_ref }}</td>
+
+<td>{{ booking.package }}</td>
+
+<td>{{ booking.booking_status }}</td>
+
+<td>₹ {{ booking.total_amount }}</td>
+
+<td>
+
+{% if booking.invoice %}
+
+<a href="/invoices/download/{{ booking.invoice.id }}/">
+Download
+</a>
+
+{% else %}
+
+Not Available
+
+{% endif %}
+
+</td>
+
+</tr>
+
+{% endfor %}
+
 </table>
+
+{% else %}
+
+<div class="no-booking">
+
+You have no bookings yet.
+
+</div>
+
+{% endif %}
+
+</body>
+</html>

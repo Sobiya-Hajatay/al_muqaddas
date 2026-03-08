@@ -1,33 +1,44 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from django.contrib.auth import get_user_model
-from rest_framework_simplejwt.tokens import RefreshToken
-import json
+from django.contrib.auth import authenticate, login, logout
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.contrib.auth import get_user_model
 from apps.bookings.models import Booking
-from django.shortcuts import render
-
-@login_required
-def dashboard(request):
-    bookings = Booking.objects.filter(user=request.user)
-    return render(request, "dashboard.html", {"bookings": bookings})
-
 
 User = get_user_model()
 
-class RegisterView(APIView):
-    def post(self, request):
-        user = User.objects.create_user(
-            username=request.data['username'],
-            password=request.data['password'],
-            phone=request.data['phone']
-        )
-        return Response({'status': 'registered'})
 
-class LoginView(APIView):
-    def post(self, request):
-        user = User.objects.get(username=request.data['username'])
-        if user.check_password(request.data['password']):
-            refresh = RefreshToken.for_user(user)
-            return Response({'token': str(refresh.access_token)})
-        return Response({'error': 'Invalid credentials'})
+def user_login(request):
+
+    if request.method == "POST":
+
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+
+            login(request, user)
+            return redirect("dashboard")
+
+        else:
+
+            messages.error(request, "Invalid Username or Password")
+            return redirect("login")
+
+    return render(request, "accounts/login.html")
+
+@login_required
+def dashboard(request):
+
+    bookings = Booking.objects.filter(user=request.user)
+
+    return render(request, "dashboard.html", {"bookings": bookings})
+
+
+def user_logout(request):
+
+    logout(request)
+
+    return redirect("login")

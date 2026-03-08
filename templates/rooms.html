@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container py-5">
+
+<h2>{{ hotel.name }} Rooms</h2>
+
+{% for r in rooms %}
+
+<div class="card p-3 mb-3">
+
+<h4>{{ r.room_type }}</h4>
+
+<p>Price per night: ₹ {{ r.price_per_night }}</p>
+
+<a class="btn btn-success">Book Room</a>
+
+</div>
+
+{% empty %}
+
+<p>No rooms available</p>
+
+{% endfor %}
+
+</div>
+
+{% endblock %}

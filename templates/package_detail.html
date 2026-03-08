@@ -1,32 +1,291 @@
 <!DOCTYPE html>
 <html>
 <head>
+
 <meta charset="UTF-8">
 <title>{{ package.title }}</title>
+
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+
+body{
+background:#f5f7fa;
+font-family: Arial;
+}
+
+.hero-img{
+width:100%;
+height:420px;
+object-fit:cover;
+border-radius:10px;
+}
+
+.section{
+background:white;
+padding:25px;
+margin-top:25px;
+border-radius:10px;
+box-shadow:0 4px 15px rgba(0,0,0,0.05);
+}
+
+.highlight{
+background:#f8f9fc;
+padding:15px;
+border-radius:8px;
+margin-bottom:15px;
+font-weight:500;
+}
+
+.booking-card{
+background:white;
+padding:25px;
+border-radius:10px;
+box-shadow:0 4px 20px rgba(0,0,0,0.1);
+position:sticky;
+top:30px;
+}
+
+.timeline{
+border-left:3px solid #ddd;
+padding-left:20px;
+}
+
+.timeline-item{
+margin-bottom:20px;
+}
+
+.btn-book{
+height:50px;
+font-size:18px;
+}
+
+.whatsapp-float{
+position:fixed;
+bottom:25px;
+right:25px;
+z-index:1000;
+}
+
+</style>
+
 </head>
 
-<body style="background:#f5f7fa;">
+<body>
 
 <div class="container mt-5">
-<div class="card p-4">
 
 <h2>{{ package.title }}</h2>
 
 {% if package.image %}
-<img src="{{ package.image.url }}" style="width:100%;max-height:400px;object-fit:cover;">
+<img src="{{ package.image.url }}" class="hero-img">
 {% endif %}
 
-<p class="mt-3"><b>Duration:</b> {{ package.duration }}</p>
-<p><b>Price:</b> ₹ {{ package.price }}</p>
+<div class="row mt-4">
+
+<!-- LEFT CONTENT -->
+
+<div class="col-md-8">
+
+<!-- Description -->
+
+<div class="section">
+
+<h4>Package Description</h4>
 <p>{{ package.description }}</p>
 
-<a href="{% url 'book_package' package.id %}" class="btn btn-dark w-100">
-Book This Package
+</div>
+
+
+<!-- Highlights -->
+
+<div class="section">
+
+<h4>Package Highlights</h4>
+
+<div class="row">
+
+<div class="col-md-6">
+<div class="highlight">✔ Stay in Makkah & Madinah Hotels</div>
+</div>
+
+<div class="col-md-6">
+<div class="highlight">✔ Visa Processing Included</div>
+</div>
+
+<div class="col-md-6">
+<div class="highlight">✔ Ziyarat Tours</div>
+</div>
+
+<div class="col-md-6">
+<div class="highlight">✔ Airport Transfers</div>
+</div>
+
+</div>
+
+</div>
+
+
+<!-- Hotels -->
+
+<div class="section">
+
+<h4>Hotels</h4>
+
+<b>Makkah Hotel</b>
+
+<p>
+Distance from Haram: 400m<br>
+4 Star Hotel<br>
+AC Rooms
+</p>
+
+<b>Madinah Hotel</b>
+
+<p>
+Distance from Masjid Nabawi: 300m<br>
+4 Star Hotel<br>
+AC Rooms
+</p>
+
+</div>
+
+
+<!-- Itinerary -->
+
+<div class="section">
+
+<h4>Itinerary</h4>
+
+<div class="timeline">
+
+<div class="timeline-item">
+<b>Day 1</b> – Departure from India
+</div>
+
+<div class="timeline-item">
+<b>Day 2</b> – Arrival Madinah
+</div>
+
+<div class="timeline-item">
+<b>Day 3</b> – Ziyarat Madinah
+</div>
+
+<div class="timeline-item">
+<b>Day 6</b> – Travel to Makkah
+</div>
+
+<div class="timeline-item">
+<b>Day 7</b> – Perform Umrah
+</div>
+
+<div class="timeline-item">
+<b>Day 20</b> – Return to India
+</div>
+
+</div>
+
+</div>
+
+
+<!-- Includes -->
+
+<div class="section">
+
+<h4>Package Includes</h4>
+
+<ul>
+
+<li>Accommodation</li>
+<li>Visa Processing</li>
+<li>Transport</li>
+<li>Ziyarat</li>
+<li>Indian Food</li>
+
+</ul>
+
+</div>
+
+
+<!-- Requirements -->
+
+<div class="section">
+
+<h4>Package Requirements</h4>
+
+<ul>
+
+<li>Valid Passport (6 Months Validity)</li>
+<li>Passport Size Photographs</li>
+<li>Vaccination Certificate</li>
+<li>Advance Booking Payment</li>
+
+</ul>
+
+</div>
+
+
+<!-- About -->
+
+<div class="section">
+
+<h4>About Al Muqaddas Tours & Travels</h4>
+
+<p>
+
+Al Muqaddas Tours & Travels was established in 1991 and has been serving pilgrims for Haj and Umrah for more than three decades.
+
+We provide carefully selected hotels in Makkah and Madinah, organized transport, visa processing and full pilgrimage support.
+
+Thousands of satisfied pilgrims have trusted Al Muqaddas for their sacred journey.
+
+</p>
+
+</div>
+
+</div>
+
+
+<!-- RIGHT BOOKING PANEL -->
+
+<div class="col-md-4">
+
+<div class="booking-card">
+
+<h3>₹ {{ package.price }}</h3>
+
+<p><b>Duration:</b> {{ package.duration }}</p>
+
+<hr>
+
+<a href="{% url 'book_package' package.id %}" class="btn btn-dark btn-book w-100">
+Book Now
+</a>
+
+<a href="https://wa.me/919821234567?text=Assalamualaikum I want details about {{ package.title }}" 
+class="btn btn-success btn-book w-100 mt-3">
+
+WhatsApp Enquiry
+
 </a>
 
 </div>
+
 </div>
+
+</div>
+
+</div>
+
+
+<!-- Floating WhatsApp -->
+
+<a href="https://wa.me/919821234567" class="whatsapp-float">
+
+<img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" width="60">
+
+</a>
+
 
 </body>
 </html>

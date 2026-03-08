@@ -8,7 +8,7 @@ class User(AbstractUser):
         ('customer', 'Customer'),
     )
 
-    phone = models.CharField(max_length=15, unique=True)
+    phone = models.CharField(max_length=20, unique=True, null=True, blank=True)
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='customer')
     wallet_balance = models.DecimalField(max_digits=12, decimal_places=2, default=0)
 
