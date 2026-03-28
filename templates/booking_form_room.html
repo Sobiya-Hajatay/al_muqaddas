@@ -1,0 +1,11 @@
+<form method="post">
+{% csrf_token %}
+
+<h3>Book Room: {{ room.room_type }}</h3>
+
+<input name="name" placeholder="Name" required>
+<input name="phone" placeholder="Phone" required>
+
+<button type="submit">Proceed</button>
+
+</form>

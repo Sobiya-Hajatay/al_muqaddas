@@ -63,14 +63,15 @@ def flights_page(request):
 def book_flight(request, flight_id):
 
     flight = get_object_or_404(Flight, id=flight_id)
+    print(flight)
 
     if request.method == "POST":
 
-        if flight.available_seats <= 0:
-            return render(request, "flights/book_flight.html", {
-                "flight": flight,
-                "error": "No seats available"
-            })
+        # if flight.available_seats <= 0:
+        #     return render(request, "flights/book_flight.html", {
+        #         "flight": flight,
+        #         "error": "No seats available"
+        #     })
 
         # Razorpay client
         client = razorpay.Client(
@@ -106,13 +107,16 @@ def book_flight(request, flight_id):
             "amount": amount,
             "razorpay_key": settings.RAZORPAY_KEY_ID
         })
-
+    
     return render(request, "flights/book_flight.html", {"flight": flight})
 
 
 # ================= PAYMENT SUCCESS =================
+from django.db import transaction
+
 @csrf_exempt
 def payment_success(request):
+   
 
     if request.method == "POST":
 
@@ -131,30 +135,32 @@ def payment_success(request):
         }
 
         try:
-
-            # Verify payment signature
+           
             client.utility.verify_payment_signature(params_dict)
 
-            booking = Booking.objects.get(razorpay_order_id=order_id)
+            with transaction.atomic():
+                booking = Booking.objects.select_for_update().get(
+                    razorpay_order_id=order_id
+                )
 
-            # Update booking payment
-            booking.amount_paid = booking.total_amount
-            booking.booking_status = "confirmed"
+                flight = Flight.objects.select_for_update().get(
+                    id=booking.flight.id
+                )
 
-            booking.razorpay_payment_id = payment_id
-            booking.razorpay_signature = signature
+              
 
-            booking.save()
+                # ✅ update booking
+                booking.amount_paid = booking.total_amount
+                booking.booking_status = "confirmed"
+                booking.razorpay_payment_id = payment_id
+                booking.razorpay_signature = signature
+                booking.save()
 
-            # Reduce seat count
-            flight = booking.flight
-            flight.available_seats -= booking.persons
-            flight.save()
+               
 
             return redirect("booking_success", booking_id=booking.id)
 
         except Exception as e:
-
             return HttpResponse("Payment verification failed")
 
 

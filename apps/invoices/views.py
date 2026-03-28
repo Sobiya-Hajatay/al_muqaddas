@@ -27,7 +27,7 @@ def download_invoice(request, invoice_id):
         ["Booking Ref:", invoice.booking.booking_ref],
         ["Customer:", invoice.booking.full_name],
         ["Phone:", invoice.booking.phone],
-        ["Package:", invoice.booking.package.title],
+        # ["Package:", invoice.booking.invoice_number],
         ["Amount:", f"₹ {invoice.amount}"],
     ]
 

@@ -20,3 +20,26 @@ def contact(request):
         return render(request,"contact.html",{"success":True})
 
     return render(request,"contact.html")
+from django.shortcuts import render
+from apps.bookings.models import Booking
+
+def payment_success(request):
+
+    payment_id = request.GET.get("payment_id")
+
+    # 🔥 booking session se lao
+    booking_id = request.session.get("booking_id")
+
+    booking = None
+
+    if booking_id:
+        try:
+            booking = Booking.objects.get(id=booking_id)
+        except Booking.DoesNotExist:
+            booking = None
+
+    return render(request, "payment_success.html", {
+        "payment_id": payment_id,
+        "booking": booking
+        
+    })

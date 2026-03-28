@@ -14,7 +14,9 @@
 
 <p>Price per night: ₹ {{ r.price_per_night }}</p>
 
-<a class="btn btn-success">Book Room</a>
+<a href="{% url 'book_room' r.id %}" class="btn btn-success w-100">
+    Book Room
+</a>
 
 </div>
 

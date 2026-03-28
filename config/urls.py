@@ -9,8 +9,9 @@ from apps.core import views
 from apps.core.views import (
     home,
     hotels_page,
-    package_detail,
-    book_package,
+    
+    
+
     admin_dashboard,
     payment_success,   
     download_invoice,
@@ -18,32 +19,27 @@ from apps.core.views import (
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("invoices/", include("apps.invoices.urls")),
-    path("accounts/", include("apps.accounts.urls")),
 
-    path('', home, name="home"),
-    path("control-room/", admin_dashboard, name="admin_dashboard"),
-    
-    # ✅ FLIGHTS APP INCLUDE (VERY IMPORTANT)
+    path("", home, name="home"),
+
+    path("accounts/", include("apps.accounts.urls")),
+    path("invoices/", include("apps.invoices.urls")),
+    path("payments/", include("apps.payments.urls")),
     path("flights/", include("apps.flights.urls")),
     path("booking/", include("apps.bookings.urls")),
-    
-    path("invoice/<int:booking_id>/", download_invoice, name="download_invoice"),
- # 💳 Razorpay
-    path("payment/success/", payment_success, name="payment_success"),
+    path("", include("apps.core.urls")),   # ✅ MAIN BOOKING FLOW
+
     path("contact/", contact, name="contact"),
+    path("control-room/", admin_dashboard, name="admin_dashboard"),
 
-    # 📄 Invoice
-    path("payments/", include("apps.payments.urls")),
-    path("invoice/<int:booking_id>/", download_invoice, name="download_invoice"),
+    # # Packages
+    # path('package/<int:pk>/', package_detail, name="package_detail"),
 
-    # ✅ HOTELS
+    # Hotels
     path('hotels/', hotels_page, name="hotels_page"),
-    path("dashboard/", admin_dashboard, name="admin_dashboard"),
     path("hotel/<int:id>/rooms/", views.hotel_rooms, name="hotel_rooms"),
-    path('package/<int:pk>/', package_detail, name="package_detail"),
-    path('book/<int:pk>/', book_package, name="book_package"),
-    path('', include('apps.core.urls')),
+    path('book-room/<int:id>/', views.booking_room, name='book_room'),
+
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

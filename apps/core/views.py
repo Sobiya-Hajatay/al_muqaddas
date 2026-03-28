@@ -18,11 +18,9 @@ from apps.hotels.models import Hotel
 from apps.flights.models import Flight
 from apps.invoices.models import Invoice
 from django.core.mail import send_mail
+from apps.hotels.models import Hotel, RoomType
+from datetime import datetime
 
-
-
-
-# ================= HOME =================
 
 def home(request):
     packages = Package.objects.filter(is_active=True)
@@ -41,17 +39,17 @@ def home(request):
     return render(request, "home.html", context)
 
 
-# ================= PACKAGE DETAIL =================
-def package_detail(request, pk):
-    package = get_object_or_404(Package, id=pk)
 
-    return render(request, "package_detail.html", {
-        "package": package
-    })
+# def package_detail(request, pk):
+#     package = get_object_or_404(Package, id=pk)
+
+#     return render(request, "package_detail.html", {
+#         "package": package
+#     })
 
 
-# ================= BOOK PACKAGE =================
 def book_package(request, pk):
+    
     package = get_object_or_404(Package, id=pk)
 
     if request.method == "POST":
@@ -66,7 +64,7 @@ def book_package(request, pk):
             messages.error(request, "Please fill required fields.")
             return redirect("book_package", pk=pk)
 
-        # ✅ CREATE BOOKING
+        
         booking = Booking.objects.create(
             user=request.user, 
             package=package,
@@ -79,7 +77,7 @@ def book_package(request, pk):
             amount_paid=Decimal("0"),
         )
 
-        # ✅ CREATE INVOICE
+      
         Invoice.objects.get_or_create(
             booking=booking,
             defaults={
@@ -88,9 +86,7 @@ def book_package(request, pk):
             }
         )
 
-        # ===============================
-        # ✅ CREATE RAZORPAY ORDER
-        # ===============================
+        
         client = razorpay.Client(
             auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET)
         )
@@ -117,8 +113,19 @@ def book_package(request, pk):
 
 # ================= PAYMENT SUCCESS =================
 @csrf_exempt
+
 def payment_success(request):
-    if request.method == "POST":
+
+
+    if request.method == "GET":
+        payment_id = request.GET.get("payment_id")
+
+        return render(request, "payment_success.html", {
+            "payment_id": payment_id
+        })
+
+    
+    elif request.method == "POST":
         client = razorpay.Client(
             auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET)
         )
@@ -136,16 +143,15 @@ def payment_success(request):
             booking = Booking.objects.get(id=booking_id)
 
             booking.amount_paid = booking.total_amount
-            booking.user = request.user
             booking.save()
 
             return redirect("booking_success", booking_id=booking.id)
 
         except Exception:
             return HttpResponse("Payment Failed")
+    return HttpResponse("Invalid request")
 
 
-# ================= BOOKING SUCCESS =================
 def booking_success(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id)
 
@@ -154,7 +160,6 @@ def booking_success(request, booking_id):
     })
 
 
-# ================= DOWNLOAD INVOICE PDF =================
 def download_invoice(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id)
 
@@ -179,7 +184,7 @@ def download_invoice(request, booking_id):
     return HttpResponse(buffer, content_type="application/pdf")
 
 
-# ================= FLIGHTS PAGE =================
+
 def flights_page(request):
     flights = Flight.objects.filter(is_active=True).select_related(
         "airline", "origin", "destination"
@@ -215,7 +220,7 @@ def flights_page(request):
     return render(request, "flights.html", context)
 
 
-# ================= HOTELS PAGE =================
+
 def hotels_page(request):
     city = request.GET.get("city")
     checkin = request.GET.get("checkin")
@@ -237,7 +242,7 @@ def hotels_page(request):
     return render(request, "hotels.html", context)
 
 
-# ================= ADMIN DASHBOARD =================
+
 @staff_member_required
 def admin_dashboard(request):
     total_packages = Package.objects.count()
@@ -317,12 +322,52 @@ def hotel_rooms(request, id):
 
     hotel = get_object_or_404(Hotel, id=id)
 
-    rooms = Room.objects.filter(hotel=hotel)
+    rooms = RoomType.objects.filter(hotel=hotel)
 
     return render(request, "rooms.html", {
         "hotel": hotel,
         "rooms": rooms
     })
+
+
+def booking_room(request, id):
+    room = get_object_or_404(RoomType, id=id)
+
+    if request.method == "POST":
+
+        name = request.POST.get("name")
+        phone = request.POST.get("phone")
+        email = request.POST.get("email")
+        checkin = request.POST.get("checkin")
+        checkout = request.POST.get("checkout")
+
+        if not all([name, phone, checkin, checkout]):
+            return redirect(request.path)
+
+        checkin_date = datetime.strptime(checkin, "%Y-%m-%d") 
+        checkout_date = datetime.strptime(checkout, "%Y-%m-%d")
+        nights = (checkout_date - checkin_date).days
+
+        total_amount = nights * float(room.price_per_night)
+
+        # ✅ FIXED BOOKING (minimal compatible)
+        booking = Booking.objects.create(
+            full_name=name,
+            phone=phone,
+            email=email,
+            persons=1,  # default
+            travel_date=checkin,
+            price_per_person=room.price_per_night,
+            total_amount=total_amount,
+            booking_status="pending",
+            payment_status="unpaid"
+        )
+
+        request.session["booking_id"] = booking.id
+
+        return redirect("payment_page", booking_id=booking.id)
+
+    return render(request, "booking_form.html", {"room": room})
 def contact(request):
 
     if request.method == "POST":
@@ -333,7 +378,7 @@ def contact(request):
         message = request.POST.get("message")
 
         print(name, email, subject, message)  # Debug in terminal
-
+ 
         messages.success(request, "Message sent successfully!")
 
         return redirect("contact")
