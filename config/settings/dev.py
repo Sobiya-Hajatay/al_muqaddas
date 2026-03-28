@@ -5,12 +5,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'almuqaddas_db',
-        'USER': 'postgres',
-        'PASSWORD': 'sobi123',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 # ===== Amadeus TEMP Keys =====
@@ -33,12 +29,6 @@ CACHES = {
 }
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    "127.0.0.1",
-    "localhost",
-    ".onrender.com",
-    ".railway.app",
-    ".vercel.app",
-]
+ALLOWED_HOSTS = ['*']
 RAZORPAY_KEY_ID = "rzp_test_SM5TczGBVJD9FC"
 RAZORPAY_KEY_SECRET = "L5Yg1ZbElZW4SKO2NshpxsUC"
